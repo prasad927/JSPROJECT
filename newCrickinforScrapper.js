@@ -132,6 +132,7 @@ function excelWriter(filePath, json, sheetName) {
     xlsx.utils.book_append_sheet(newWB, newWS, sheetName);
     xlsx.writeFile(newWB, filePath);
 }
+
 function excelReader(filePath, sheetName) {
     if (fs.existsSync(filePath) == false) {
         return [];
