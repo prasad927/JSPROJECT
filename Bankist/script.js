@@ -80,8 +80,33 @@ const displayMovements = function(movements){
        containerMovements.insertAdjacentHTML('afterbegin',html); 
    });
 }
-
 displayMovements(account1.movements);
+
+const calcAndDisplayBalance = function(movements){
+  const balance = movements.reduce(function(acu,curr){
+     return acu+curr;
+  },0);
+  labelBalance.textContent = `${balance} EUR`;
+}
+
+calcAndDisplayBalance(account1.movements);
+
+
+//creating username and add new property to every account object;
+const createUserNames = function(accs){
+   accs.forEach(function(acc){
+     //add new property by computing user name                 
+         acc.username = acc.owner
+         .toLowerCase()
+         .split(' ')   
+         .map(function(word){
+           return word[0];
+         }) 
+         .join(''); 
+   });
+}
+createUserNames(accounts); // pass array of account objects;
+
 
 
 
