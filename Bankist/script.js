@@ -73,7 +73,7 @@ const displayMovements = function(movements){
        const html = `
        <div class="movements__row">                         
             <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
-            <div class="movements__value">4 000€</div>
+            <div class="movements__value">${mov}€</div>
        </div>
        `;
        // adding html into given element.
@@ -86,10 +86,38 @@ const calcAndDisplayBalance = function(movements){
   const balance = movements.reduce(function(acu,curr){
      return acu+curr;
   },0);
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance}€`;
 }
 
 calcAndDisplayBalance(account1.movements);
+
+//calc and display summary.
+const calcDisplaySummary = function(movements){
+    
+  const incomes = movements
+                  .filter(mov=>mov>0)
+                  .reduce((acum,movement)=> acum+movement , 0);
+  labelSumIn.textContent = `${incomes}€`;
+
+  const out =    movements
+                 .filter(mov=>mov<0)
+                 .reduce((acum,movement)=>acum+movement,0);
+   
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+  const interest = movements
+                   .filter(mov => mov>0)
+                   .map(deposit=>{
+                       // interest rate  = 1.2%; on each deposit.
+                       return (deposit*1.2)/100;
+                   })
+                   .filter((interest)=>{
+                     //bank decide to give interest only when it greater than 1
+                     return interest>=1;
+                   })
+                   .reduce((acum,currval)=> acum+currval,0);
+  labelSumInterest.textContent = `${interest}€`;
+}
+calcDisplaySummary(account1.movements);
 
 
 //creating username and add new property to every account object;
@@ -106,7 +134,6 @@ const createUserNames = function(accs){
    });
 }
 createUserNames(accounts); // pass array of account objects;
-
 
 
 
