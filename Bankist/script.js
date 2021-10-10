@@ -61,83 +61,113 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 
-const displayMovements = function(movements){
-   containerMovements.innerHTML = ''; // reset to empty before adding new movements__row.
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = ''; // reset to empty before adding new movements__row.
 
-   movements.forEach(function(mov,i){
+  movements.forEach(function (mov, i) {
 
-       //creating  div element with class movements__row in each iteration. and change some class OR data according
-       // mov val.
-       const type = mov > 0 ? 'deposit' : 'withdrawal';        
+    //creating  div element with class movements__row in each iteration. and change some class OR data according
+    // mov val.
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
 
-       const html = `
+    const html = `
        <div class="movements__row">                         
-            <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
+            <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
             <div class="movements__value">${mov}€</div>
        </div>
        `;
-       // adding html into given element.
-       containerMovements.insertAdjacentHTML('afterbegin',html); 
-   });
+    // adding html into given element.
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
 }
-displayMovements(account1.movements);
+// displayMovements(account1.movements);
 
-const calcAndDisplayBalance = function(movements){
-  const balance = movements.reduce(function(acu,curr){
-     return acu+curr;
-  },0);
+const calcAndDisplayBalance = function (movements) {
+  const balance = movements.reduce(function (acu, curr) {
+    return acu + curr;
+  }, 0);
   labelBalance.textContent = `${balance}€`;
 }
 
-calcAndDisplayBalance(account1.movements);
+// calcAndDisplayBalance(account1.movements);
 
 //calc and display summary.
-const calcDisplaySummary = function(movements){
-    
-  const incomes = movements
-                  .filter(mov=>mov>0)
-                  .reduce((acum,movement)=> acum+movement , 0);
+const calcDisplaySummary = function (acc) {
+
+  const incomes = acc.movements
+    .filter(mov => mov > 0)
+    .reduce((acum, movement) => acum + movement, 0);
   labelSumIn.textContent = `${incomes}€`;
 
-  const out =    movements
-                 .filter(mov=>mov<0)
-                 .reduce((acum,movement)=>acum+movement,0);
-   
+  const out = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((acum, movement) => acum + movement, 0);
+
   labelSumOut.textContent = `${Math.abs(out)}€`;
-  const interest = movements
-                   .filter(mov => mov>0)
-                   .map(deposit=>{
-                       // interest rate  = 1.2%; on each deposit.
-                       return (deposit*1.2)/100;
-                   })
-                   .filter((interest)=>{
-                     //bank decide to give interest only when it greater than 1
-                     return interest>=1;
-                   })
-                   .reduce((acum,currval)=> acum+currval,0);
+  const interest = acc.movements
+    .filter(mov => mov > 0)
+    .map(deposit => {
+      // interest rate  = 1.2%; on each deposit.
+      return (deposit * acc.interestRate) / 100;
+    })
+    .filter((interest) => {
+      //bank decide to give interest only when it greater than 1
+      return interest >= 1;
+    })
+    .reduce((acum, currval) => acum + currval, 0);
   labelSumInterest.textContent = `${interest}€`;
 }
-calcDisplaySummary(account1.movements);
+// calcDisplaySummary(account1.movements);
 
 
 //creating username and add new property to every account object;
-const createUserNames = function(accs){
-   accs.forEach(function(acc){
-     //add new property by computing user name                 
-         acc.username = acc.owner
-         .toLowerCase()
-         .split(' ')   
-         .map(function(word){
-           return word[0];
-         }) 
-         .join(''); 
-   });
+const createUserNames = function (accs) {
+  accs.forEach(function (acc) {
+    //add new property by computing user name                 
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(function (word) {
+        return word[0];
+      })
+      .join('');
+  });
 }
 createUserNames(accounts); // pass array of account objects;
 
+//add event handler's. && implementing login.
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  //prevent form form submitting
+  e.preventDefault();
+
+  currentAccount = accounts.find(function (acc) {
+    return acc.username === inputLoginUsername.value;
+  });
+
+  // use of optional chaining
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //correct credentials login the current user.
+
+    //Display UI and welcome msg
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
+    containerApp.style.opacity = 100;
+
+    //clear input fields
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur(); // method use to blur focus of cursor after user login
 
 
+    //Display movements
+    displayMovements(currentAccount.movements);
+    //Display balance
+    calcAndDisplayBalance(currentAccount.movements);
+    //Display summary
+    calcDisplaySummary(currentAccount);
+  }
 
+});
 
 
 
