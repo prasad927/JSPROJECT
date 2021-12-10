@@ -1,5 +1,6 @@
 *{
     box-sizing: border-box;
+    font-family: 'Yanone Kaffeesatz', sans-serif;
 }
 
 body{
@@ -85,7 +86,7 @@ body{
     top:calc( (100vh - 50vh)/2);
     left:calc( (100vw - 50vw)/2);
     display: none;
-
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
 .textarea-cont{
